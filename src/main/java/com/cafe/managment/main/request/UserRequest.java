@@ -1,25 +1,10 @@
-package com.cafe.managment.main.model;
+package com.cafe.managment.main.request;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-
-@Entity
-@Table(name = "user")
-public class User extends EntityAudit {
+public class UserRequest {
 
 	
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int id;
-
-	@Column(name = "user_name")
 	private String userName;
-
-	@Column(name = "email_id")
+	
 	private String emailId;
 
 	private String password;
@@ -28,12 +13,18 @@ public class User extends EntityAudit {
 
 	private String role;
 
-	public int getId() {
-		return id;
+	public UserRequest() {
+		super();
+		
 	}
 
-	public void setId(int id) {
-		this.id = id;
+	public UserRequest(String userName, String emailId, String password, String status, String role) {
+		super();
+		this.userName = userName;
+		this.emailId = emailId;
+		this.password = password;
+		this.status = status;
+		this.role = role;
 	}
 
 	public String getUserName() {
@@ -78,8 +69,9 @@ public class User extends EntityAudit {
 
 	@Override
 	public String toString() {
-		return "User [id=" + id + ", userName=" + userName + ", emailId=" + emailId + ", password=" + password
-				+ ", status=" + status + ", role=" + role + "]";
+		return "UserRequest [userName=" + userName + ", emailId=" + emailId + ", password=" + password + ", status="
+				+ status + ", role=" + role + "]";
 	}
-
+	
+	
 }

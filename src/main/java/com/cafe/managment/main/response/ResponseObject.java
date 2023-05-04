@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 
 public class ResponseObject {
 
-	private Object object;
+	private Object response;
 	private HttpStatus status;
 	private String message;
 	private List<String> messages;
@@ -19,14 +19,15 @@ public class ResponseObject {
 
 	public ResponseObject(Object response) {
 
-		object = response;
+		
+		this.response = response;
 		status = HttpStatus.OK;
 
 	}
 
-	public ResponseObject(Object object, String message, HttpStatus status) {
+	public ResponseObject(Object response, String message, HttpStatus status) {
 
-		this.object = object;
+		this.response = response;
 		this.message = message;
 		this.status = status;
 	}
@@ -36,8 +37,8 @@ public class ResponseObject {
 		this.status = status;
 	}
 
-	public ResponseObject(Object object, List<String> messages, HttpStatus status) {
-		this.object = object;
+	public ResponseObject(Object response, List<String> messages, HttpStatus status) {
+		this.response = response;
 		this.messages = messages;
 		this.message = getMessagesString(messages).toString();
 		this.status = status;
@@ -54,12 +55,12 @@ public class ResponseObject {
 		return errorMessage;
 	}
 
-	public Object getObject() {
-		return object;
+	public Object getResponse() {
+		return response;
 	}
 
-	public void setObject(Object object) {
-		this.object = object;
+	public void setObject(Object response) {
+		this.response = response;
 	}
 
 	public HttpStatus getStatus() {
@@ -88,7 +89,7 @@ public class ResponseObject {
 
 	@Override
 	public String toString() {
-		return "ResponseObject [object=" + object + ", status=" + status + ", message=" + message + ", messages="
+		return "ResponseObject [response=" + response + ", status=" + status + ", message=" + message + ", messages="
 				+ messages + "]";
 	}
 
