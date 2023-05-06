@@ -22,7 +22,7 @@ public class UserController {
 	@Autowired
 	public UserService userService;
 
-	@PostMapping("save/users")
+	@PostMapping("save")
 	public ResponseObject saveUser(@RequestBody UserRequest userRequest) {
 
 		ResponseObject responseObject = null;
