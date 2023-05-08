@@ -7,33 +7,38 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.cafe.managment.main.service.CustomUserDetailsServiceImpl;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-public class RequestFilter  extends OncePerRequestFilter{
+@Component
+public class RequestFilter extends OncePerRequestFilter {
 
 	@Autowired
 	private CustomUserDetailsServiceImpl userDetailsService;
-	
+
 	@Autowired
 	private JwtTokenUtil jwtTokenUtil;
+     
+	
+	Claims claims;
 
-
+	private String username = null;
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
 			throws ServletException, IOException {
 
-		final String requestTokenHeader = request.getHeader("authorization");
+		final String requestTokenHeader = request.getHeader("api/v1/user/save");
 
-		String username = null;
 		String jwtToken = null;
 		if (requestTokenHeader != null && !requestTokenHeader.isEmpty()) {
 			jwtToken = requestTokenHeader;
@@ -70,7 +75,16 @@ public class RequestFilter  extends OncePerRequestFilter{
 		chain.doFilter(request, response);
 	}
 
-	
-	
-	
+	public boolean isAdmin() {
+		return "admin".equalsIgnoreCase((String) claims.get("role"));
+	}
+
+	public boolean isUser() {
+		return "User".equalsIgnoreCase((String) claims.get("role"));
+	}
+
+	public String getCurrentUser() {
+		return username;
+	}
+
 }

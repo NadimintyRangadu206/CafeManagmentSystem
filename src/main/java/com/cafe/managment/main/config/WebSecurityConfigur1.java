@@ -15,6 +15,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
 
 @Configurable
 @EnableWebSecurity
@@ -54,12 +55,29 @@ public class WebSecurityConfigur1 {
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		
-	http.cors().and().cors().disable().authorizeRequests().requestMatchers("api/v1/user/save").permitAll().anyRequest()
-	.authenticated().and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-	
-	http.addFilterBefore(jwtRequestFilter,UsernamePasswordAuthenticationFilter.class);
+		http.cors().configurationSource(request-> new CorsConfiguration().applyPermitDefaultValues())
+		.and()
+		.csrf()
+		.disable()
+		.authorizeRequests().requestMatchers("api/v1/user/save").permitAll()
+		.anyRequest()
+		.authenticated()
+		.and()
+		.exceptionHandling()
+		.and()
+		.sessionManagement()
+		.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+		
+		http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+		
 		return http.build();
 		
+//	http.cors().and().cors().disable().authorizeRequests().requestMatchers("api/v1/user/save").permitAll().anyRequest()
+//	.authenticated().and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+//	
+//	http.addFilterBefore(jwtRequestFilter,UsernamePasswordAuthenticationFilter.class);
+//		return http.build();
+//		
 	}
 
 }
