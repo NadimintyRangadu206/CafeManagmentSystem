@@ -59,7 +59,7 @@ public class WebSecurityConfigur1 {
 		.and()
 		.csrf()
 		.disable()
-		.authorizeRequests().requestMatchers("api/v1/user/save").permitAll()
+		.authorizeRequests().requestMatchers("api/v1/user/save","api/v1/user/login").permitAll()
 		.anyRequest()
 		.authenticated()
 		.and()

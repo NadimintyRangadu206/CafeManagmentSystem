@@ -5,18 +5,34 @@ import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import com.cafe.managment.main.config.JwtTokenUtil;
 import com.cafe.managment.main.exception.CafeException;
 import com.cafe.managment.main.model.User;
 import com.cafe.managment.main.repository.UserRepository;
+import com.cafe.managment.main.request.LoginRequest;
 import com.cafe.managment.main.request.UserRequest;
+import com.cafe.managment.main.response.ResponseObject;
 
 @Service
 public class UserServiceImpl implements UserService {
 
 	@Autowired
 	public UserRepository userRepository;
+
+	@Autowired(required = true)
+   AuthenticationManager authentication;
+
+     @Autowired
+	public CustomUserDetailsServiceImpl customUserDetailsServiceImpl;
+
+	@Autowired
+	public JwtTokenUtil jwtTokenUtil;
 
 	@Override
 	public User saveUser(UserRequest userRequest) {
@@ -50,6 +66,32 @@ public class UserServiceImpl implements UserService {
 		User saveUser = userRepository.saveAndFlush(user);
 
 		return saveUser;
+	}
+
+	@Override
+	public ResponseObject userLogin(LoginRequest request) {
+
+		try {
+
+			Authentication auth = authentication
+					.authenticate(new UsernamePasswordAuthenticationToken(request.getEmailId(), request.getPassword()));
+
+			if (auth.isAuthenticated()) {
+				if (customUserDetailsServiceImpl.user().getStatus().equalsIgnoreCase("true")) {
+
+					return new ResponseObject(
+							jwtTokenUtil.generateToken(customUserDetailsServiceImpl.user().getEmailId(),
+									customUserDetailsServiceImpl.user().getRole()),
+							HttpStatus.OK);
+				} else {
+					return new ResponseObject("Waiting for admin approval", HttpStatus.BAD_REQUEST);
+				}
+			}
+		} catch (CafeException e) {
+
+			throw new CafeException(400, "EmailId and Password is Wrong");
+		}
+		return new ResponseObject("Bad Request", HttpStatus.BAD_REQUEST);
 	}
 
 }

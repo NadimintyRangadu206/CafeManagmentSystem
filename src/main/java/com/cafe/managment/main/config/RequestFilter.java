@@ -37,7 +37,7 @@ public class RequestFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
 			throws ServletException, IOException {
 
-		final String requestTokenHeader = request.getHeader("api/v1/user/save");
+		final String requestTokenHeader = request.getHeader("api/v1/user/save| api/v1/user/login");
 
 		String jwtToken = null;
 		if (requestTokenHeader != null && !requestTokenHeader.isEmpty()) {
