@@ -4,12 +4,10 @@ import java.io.Serializable;
 
 public class LoginRequest  implements Serializable{
 
-	/**
-	 * 
-	 */
+	
 	private static final long serialVersionUID = 1L;
 	
-	private String emailId;
+	private String userName;
 	private String password;
 	
 	public LoginRequest() {
@@ -17,19 +15,19 @@ public class LoginRequest  implements Serializable{
 	}
 
 	
-	public LoginRequest(String emailId, String password) {
+	public LoginRequest(String userName, String password) {
 		super();
-		this.emailId = emailId;
+		this.userName = userName;
 		this.password = password;
 	}
 
 
-	public String getEmailId() {
-		return emailId;
+	public String getUserName() {
+		return userName;
 	}
 
-	public void setEmailId(String emailId) {
-		this.emailId = emailId;
+	public void setUserName(String userName) {
+		this.userName = userName;
 	}
 
 	public String getPassword() {

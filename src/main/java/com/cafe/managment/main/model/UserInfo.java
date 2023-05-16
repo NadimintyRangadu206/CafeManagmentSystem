@@ -9,9 +9,11 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "user")
-public class User extends EntityAudit {
+public class UserInfo extends EntityAudit {
 
 	
+	private static final long serialVersionUID = 1L;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;

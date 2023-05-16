@@ -12,7 +12,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.cafe.managment.main.service.CustomUserDetailsServiceImpl;
 
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -23,68 +22,55 @@ import jakarta.servlet.http.HttpServletResponse;
 public class RequestFilter extends OncePerRequestFilter {
 
 	@Autowired
-	private CustomUserDetailsServiceImpl userDetailsService;
+	private JwtTokenUtil jwtTokenUtil;
 
 	@Autowired
-	private JwtTokenUtil jwtTokenUtil;
-     
-	
-	Claims claims;
-
-	private String username = null;
+	private CustomUserDetailsServiceImpl customUserDetailsServiceImpl;
 
 	@Override
-	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 
-		final String requestTokenHeader = request.getHeader("api/v1/user/save| api/v1/user/login");
+		final String authHeader = request.getHeader("Authorization");
+
+		String username = null;
 
 		String jwtToken = null;
-		if (requestTokenHeader != null && !requestTokenHeader.isEmpty()) {
-			jwtToken = requestTokenHeader;
+
+		if (authHeader != null && authHeader.startsWith("Bearer ")) {
+
+			jwtToken = authHeader.substring(7);
 			try {
 				username = jwtTokenUtil.getUsernameFromToken(jwtToken);
 			} catch (IllegalArgumentException e) {
 				System.out.println("Unable to get JWT Token");
 			} catch (ExpiredJwtException e) {
+
 				System.out.println("JWT Token has expired");
 			}
 		} else {
 			logger.warn("Token Should not be Empty String");
 		}
 
-		// Once we get the token validate it.
 		if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-			UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
+			UserDetails userDetails = customUserDetailsServiceImpl.loadUserByUsername(username);
 
-			// if token is valid configure Spring Security to manually set
-			// authentication
 			if (jwtTokenUtil.validateToken(jwtToken, userDetails)) {
 
 				UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
 						userDetails, null, userDetails.getAuthorities());
+
 				usernamePasswordAuthenticationToken
 						.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-				// After setting the Authentication in the context, we specify
-				// that the current user is authenticated. So it passes the
-				// Spring Security Configurations successfully.
+
 				SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
 			}
+
 		}
-		chain.doFilter(request, response);
-	}
 
-	public boolean isAdmin() {
-		return "admin".equalsIgnoreCase((String) claims.get("role"));
-	}
+		filterChain.doFilter(request, response);
 
-	public boolean isUser() {
-		return "User".equalsIgnoreCase((String) claims.get("role"));
-	}
-
-	public String getCurrentUser() {
-		return username;
 	}
 
 }
