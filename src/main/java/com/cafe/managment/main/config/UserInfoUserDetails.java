@@ -13,8 +13,15 @@ import com.cafe.managment.main.model.UserInfo;
 
 public class UserInfoUserDetails implements UserDetails {
 
+	public int getUserId() {
+		return userId;
+	}
+
+
 	private static final long serialVersionUID = 1L;
 	
+	     private int userId;
+	     
 	  private String userName;
 	  
        private String password;
@@ -24,7 +31,7 @@ public class UserInfoUserDetails implements UserDetails {
        
 	
 	public UserInfoUserDetails(UserInfo userInfo) {
-	
+	        userId=userInfo.getId();
 	    userName=userInfo.getUserName();
 	    password=userInfo.getPassword();
 		authorities=Arrays.stream(userInfo.getRole().split(","))

@@ -25,7 +25,7 @@ public class JwtTokenUtil implements Serializable {
 	public static final long JWT_TOKEN_VALIDITY = 4 * 60 * 60;
 
 
-	private  final String SECRET="?E(G+KbPeShVmYq3t6w9z$C&F)J@McQf";
+	private  final String SECRET="5367566B59703373367639792F423F4528482B4D6251655468576D5A71347437";
 
 	public String getUsernameFromToken(String token) {
 		return getClaimFromToken(token, Claims::getSubject);
@@ -52,9 +52,9 @@ public class JwtTokenUtil implements Serializable {
 		return expiration.before(new Date());
 	}
 
-	public String generateToken(String userName) {
+	public String generateToken(UserDetails userDetails) {
 		Map<String, Object> claims = new HashMap<>();
-		return doGenerateToken(claims, userName);
+		return doGenerateToken(claims, userDetails.getUsername());
 	}
 
 	// while creating the token -
@@ -62,10 +62,10 @@ public class JwtTokenUtil implements Serializable {
 	// 2. Sign the JWT using the HS512 algorithm and secret key.
 	// 3. According to JWS Compact
 	// Serialization(https://tools.ietf.org/html/draft-ietf-jose-json-web-signature-41#section-3.1)
-	// compaction of the JWT to a URL-safe string
-	private String doGenerateToken(Map<String, Object> claims, String userName) {
+	// compaction of the JWT to a URL-safe stringF
+	private String doGenerateToken(Map<String, Object> claims, String subject) {
 
-		return Jwts.builder().setClaims(claims).setSubject(userName).setIssuedAt(new Date(System.currentTimeMillis()))
+		return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
 				.setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY * 1000))
 				.signWith(getsignKey(), SignatureAlgorithm.HS256).compact();
 		
