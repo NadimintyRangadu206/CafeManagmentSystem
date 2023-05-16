@@ -62,10 +62,10 @@ public class UserServiceImpl implements UserService {
 
 		BeanUtils.copyProperties(userRequest, user);
 
-		user.setStatus("false");
-		user.setRole("User");
+		user.setStatus("true");
+		user.setRole("Admin");
 		user.getIsActive();
-		user.getUpdatedDate(new Date(0));
+//		user.getUpdatedDate(new Date(0, 0, 0));
 		UserInfo saveUser = userRepository.saveAndFlush(user);
 
 		return saveUser;
