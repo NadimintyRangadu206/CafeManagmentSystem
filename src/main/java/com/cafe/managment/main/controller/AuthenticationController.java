@@ -17,13 +17,18 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.cafe.managment.main.config.JwtTokenUtil;
 import com.cafe.managment.main.config.UserInfoUserDetails;
+import com.cafe.managment.main.constatnts.ErrorMessages;
+import com.cafe.managment.main.constatnts.SuccessMessages;
 import com.cafe.managment.main.exception.CafeException;
 import com.cafe.managment.main.model.UserInfo;
 import com.cafe.managment.main.repository.UserRepository;
+import com.cafe.managment.main.request.ChangeUserPasswordRequest;
 import com.cafe.managment.main.request.LoginRequest;
 import com.cafe.managment.main.response.JwtResponse;
 import com.cafe.managment.main.response.ResponseObject;
 import com.cafe.managment.main.service.CustomUserDetailsServiceImpl;
+import com.cafe.managment.main.service.UserService;
+import com.cafe.managment.main.service.UserServiceImpl;
 
 @RestController
 @RequestMapping("api/v1/")
@@ -43,6 +48,9 @@ public class AuthenticationController {
 	
 	@Autowired
 	public BCryptPasswordEncoder bCryptPasswordEncoder;
+	
+	@Autowired
+	public UserService userService;
 	
 	@PostMapping("authenticate")
 	public ResponseObject authenticationUser(@RequestBody LoginRequest loginRequest) {
@@ -78,19 +86,44 @@ public class AuthenticationController {
 	}
 
 	private void authenticate(String userName, String password, UserDetails userDetails, UserInfo userInfo) {
-	
+
 		boolean isPasswordMatch = bCryptPasswordEncoder.matches(password, userDetails.getPassword());
 		if (isPasswordMatch && userName.equalsIgnoreCase(userDetails.getUsername())) {
-				
-				userRepository.saveAndFlush(userInfo);
-				
-		} else {
-	
+
 			userRepository.saveAndFlush(userInfo);
-			
-			
+
+		} else {
+
+			userRepository.saveAndFlush(userInfo);
+
 		}
-		
+
+	}
+	
+	
+	@PostMapping("change/user/password")
+	public ResponseObject changeUserPassword(@RequestBody ChangeUserPasswordRequest changeUserPasswordRequest) {
+		ResponseObject responseObject = null;
+
+		try {
+
+			UserInfo info = userService.changeUserPassword(changeUserPasswordRequest);
+
+			if (info != null) {
+
+				responseObject = new ResponseObject(SuccessMessages.USER_PASSWORD_IS_CHANGED_SUCCESSFULLY,
+						HttpStatus.OK);
+			} else {
+				responseObject = new ResponseObject(null, ErrorMessages.SOMETTHING_WENT_WRONG, HttpStatus.BAD_REQUEST);
+			}
+
+		} catch (CafeException e) {
+
+			responseObject = new ResponseObject(null, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+
+		}
+		return responseObject;
+
 	}
 
 }
