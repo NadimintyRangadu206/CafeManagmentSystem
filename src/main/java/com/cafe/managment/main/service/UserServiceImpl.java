@@ -1,5 +1,7 @@
 package com.cafe.managment.main.service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
@@ -20,11 +22,10 @@ public class UserServiceImpl implements UserService {
 	@Autowired
 	public UserRepository userRepository;
 
-
 	@Qualifier("authentication")
-   AuthenticationManager authentication;
+	AuthenticationManager authentication;
 
-     @Autowired
+	@Autowired
 	public CustomUserDetailsServiceImpl customUserDetailsServiceImpl;
 
 	@Autowired
@@ -49,7 +50,7 @@ public class UserServiceImpl implements UserService {
 
 			if (userRequest != null) {
 				user = new UserInfo();
-			
+
 			}
 
 		}
@@ -64,31 +65,34 @@ public class UserServiceImpl implements UserService {
 
 		return saveUser;
 	}
-//
-//	@Override
-//	public ResponseObject userLogin(LoginRequest request) {
-//
-//		try {
-//
-//			Authentication auth = authentication
-//					.authenticate(new UsernamePasswordAuthenticationToken(request.getEmailId(), request.getPassword()));
-//
-//			if (auth.isAuthenticated()) {
-//				if (customUserDetailsServiceImpl.userInfo().getStatus().equalsIgnoreCase("true")) {
-//
-//					return new ResponseObject(
-//							jwtTokenUtil.generateToken(customUserDetailsServiceImpl.user().getEmailId(),
-//									customUserDetailsServiceImpl.user().getRole()),
-//							HttpStatus.OK);
-//				} else {
-//					return new ResponseObject("Waiting for admin approval", HttpStatus.BAD_REQUEST);
-//				}
-//			}
-//		} catch (CafeException e) {
-//
-//			throw new CafeException(400, "EmailId and Password is Wrong");
-//		}
-//		return new ResponseObject("Bad Request", HttpStatus.BAD_REQUEST);
-//	}
+
+
+	@Override
+	public List<UserInfo> getAllUsers() {
+
+		try {
+			List<UserInfo> listOfUsers = userRepository.getAllUsers();
+
+			List<UserInfo> getUsers = new ArrayList<UserInfo>();
+
+			for (UserInfo userInfo : listOfUsers) {
+
+				getUsers.add(userInfo);
+
+			}
+
+			if (!getUsers.isEmpty()) {
+
+				return getUsers;
+			} else {
+				throw new CafeException(400, "No Records are Fecthching");
+			}
+		} catch (Exception e) {
+
+			throw new CafeException(400, e.getLocalizedMessage());
+
+		}
+
+	}
 
 }
