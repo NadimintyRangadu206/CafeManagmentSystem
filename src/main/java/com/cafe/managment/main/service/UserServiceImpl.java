@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.stereotype.Service;
 
@@ -85,7 +86,7 @@ public class UserServiceImpl implements UserService {
 
 				return getUsers;
 			} else {
-				throw new CafeException(400, "No Records are Fecthching");
+				 throw new CafeException(400, "No Records are Fecthching");
 			}
 		} catch (Exception e) {
 
@@ -93,6 +94,25 @@ public class UserServiceImpl implements UserService {
 
 		}
 
+	}
+
+	@Override
+	public UserRequest getUserById(int id) {
+
+		UserRequest request = null;
+
+		Optional<UserInfo> optionalInfo = userRepository.findById(id);
+
+		UserInfo info = null;
+
+		if (optionalInfo.isPresent()) {
+
+			info = optionalInfo.get();
+			BeanUtils.copyProperties(info, request);
+
+		}
+
+		return request;
 	}
 
 }

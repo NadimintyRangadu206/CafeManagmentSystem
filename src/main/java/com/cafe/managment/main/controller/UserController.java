@@ -5,12 +5,14 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cafe.managment.main.constatnts.ErrorMessages;
+import com.cafe.managment.main.constatnts.ServiceConstraint;
 import com.cafe.managment.main.constatnts.SuccessMessages;
 import com.cafe.managment.main.exception.CafeException;
 import com.cafe.managment.main.model.UserInfo;
@@ -24,6 +26,7 @@ public class UserController extends BaseController {
 
 	@Autowired
 	public UserService userService;
+	
 
 	@PostMapping("save")
 	public ResponseObject saveUser(@RequestBody UserRequest userRequest) {
@@ -43,6 +46,7 @@ public class UserController extends BaseController {
 		return responseObject;
 	}
 
+	
 	@GetMapping("get/all/users")
 	public ResponseObject getAllUsers() {
 
@@ -55,6 +59,34 @@ public class UserController extends BaseController {
 
 		} catch (Exception e) {
 			responseObject = new ResponseObject(null, e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
+		}
+		return responseObject;
+
+	}
+	
+	
+	@GetMapping("getuser/{id}")
+	public ResponseObject getUserById(@PathVariable int id) {
+
+		ResponseObject responseObject = null;
+
+		try {
+
+			UserRequest request = userService.getUserById(id);
+
+			if (request.getUserName() != null) {
+				responseObject = new ResponseObject(request, ServiceConstraint.GET_PARTICULAR_USER_DETAILS,
+						HttpStatus.OK);
+			} else {
+
+				responseObject = new ResponseObject(id, ServiceConstraint.Id_DOES_NOT_EXIST,
+						HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+
+		} catch (CafeException e) {
+
+			responseObject = new ResponseObject(null, e.getMessage(), HttpStatus.BAD_REQUEST);
+
 		}
 		return responseObject;
 

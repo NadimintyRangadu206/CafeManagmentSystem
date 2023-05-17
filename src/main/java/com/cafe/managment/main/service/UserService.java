@@ -11,6 +11,8 @@ public interface UserService {
 
 	List<UserInfo> getAllUsers();
 
+	UserRequest getUserById(int id);
+
 //	ResponseObject userLogin(LoginRequest request);
 
 	
